@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sum-subset"
+version = "0.1.0"
+description = ""
+authors = ["Hiroaki Kataoka <k_hir@hotmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.26.4"
+maturin = "^1.5.1"
+
+
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+python-source = "py"
