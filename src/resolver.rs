@@ -49,7 +49,7 @@ fn test() {
 
 pub fn resolve_sum_of_subset<F>(
     value: &Vec<HashSet<u32>>,
-    weight: &Vec<u32>,
+    weight: &[u32],
     calc_distance: F,
 ) -> Vec<Node>
 where
