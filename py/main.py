@@ -23,20 +23,29 @@ def main():
         {7},
         {6, 9, 13, 15},
         {20, 22},
-        {5},  # Pure Pythonだとこのあたりが限界
+        {5},  # リストによるQueueを使う場合、Pure Pythonではここが限界で再帰によるスタックを使うと最後までできる
         {6, 9},
-        # {7},
-        # {6, 9, 13, 15},
-        # {20, 22},
+        {7},
+        {6, 9, 13, 15},
+        {20, 22},
     ]
     W = [1 for _ in L]
 
+    # 距離関数をRust埋め込みにすると更に早い
+    print("Queue In Rust")
     t = time.time()
     print(sum_subset.resolve_sum_of_subset(L, W, lambda x, y: x * x + y * y + 2 * x * y))
     print(time.time() - t)
+    print()
+    print("Stack In Rust")
+    t = time.time()
+    print(sum_subset.resolve_sum_of_subset_rec(L, W, lambda x, y: x * x + y * y + 2 * x * y))
+    print(time.time() - t)
+    print()
     # t = time.time()
     # print(resolve_sum_of_subset(L, W, lambda x, y: x * x + y * y + 2 * x * y))
     # print(time.time() - t)
+    print("Stack In Pure Python")
     t = time.time()
     print(resolve_sum_of_subset_rec(L, W, lambda x, y: x * x + y * y + 2 * x * y))
     print(time.time() - t)
