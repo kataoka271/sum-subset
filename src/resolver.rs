@@ -36,11 +36,9 @@ fn test() {
         HashSet::from([6, 9, 13, 15]),
         HashSet::from([20, 22]),
     ];
-    let weight: Vec<u32> = vec![
-        1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    ];
+    let weight: Vec<u32> = vec![1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
-    let result = resolve_sum_of_subset(&value, &weight, |x, y| x * x + y * y + 2 * x * y);
+    let result = resolve_sum_of_subset(value, weight, |x, y| x * x + y * y + 2 * x * y);
 
     for item in result.iter() {
         let mut v = Vec::from_iter(item.visited_indices.iter());
@@ -50,11 +48,7 @@ fn test() {
     println!("{}", result.len());
 }
 
-pub fn resolve_sum_of_subset<F>(
-    value: &Vec<HashSet<u32>>,
-    weight: &[u32],
-    calc_distance: F,
-) -> Vec<Node>
+pub fn resolve_sum_of_subset<F>(value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: F) -> Vec<Node>
 where
     F: Fn(u32, u32) -> u32,
 {
@@ -94,30 +88,18 @@ where
                 current_index: j,
                 visited_indices: item.visited_indices.clone(),
                 union_values: item.union_values.clone(),
-                distance: item.distance
-                    + item
-                        .visited_indices
-                        .iter()
-                        .map(|i| calc_distance(weight[*i], weight[j]))
-                        .sum::<u32>(),
+                distance: item.distance + item.visited_indices.iter().map(|i| calc_distance(weight[*i], weight[j])).sum::<u32>(),
             };
             node.visited_indices.insert(node.current_index);
             node.union_values.extend(&value[node.current_index]);
             q.push_back(node);
         }
     }
-    let result: Vec<_> = result
-        .into_iter()
-        .filter(|node| node.distance <= min_distance)
-        .collect();
+    let result: Vec<_> = result.into_iter().filter(|node| node.distance <= min_distance).collect();
     result
 }
 
-pub fn resolve_sum_of_subset_rec<F>(
-    value: &Vec<HashSet<u32>>,
-    weight: &Vec<u32>,
-    calc_distance: F,
-) -> Vec<Node>
+pub fn resolve_sum_of_subset_rec<F>(value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: F) -> Vec<Node>
 where
     F: Fn(u32, u32) -> u32,
 {
@@ -149,75 +131,18 @@ where
             Param {
                 k,
                 n,
-                value,
-                weight,
+                value: &value,
+                weight: &weight,
                 calc_distance: &calc_distance,
             },
         );
     }
 
-    let result: Vec<_> = result
-        .into_iter()
-        .filter(|node| node.distance <= min_distance)
-        .collect();
+    let result: Vec<_> = result.into_iter().filter(|node| node.distance <= min_distance).collect();
     result
 }
 
-struct Param<'a, F> {
-    k: usize,
-    n: usize,
-    value: &'a Vec<HashSet<u32>>,
-    weight: &'a Vec<u32>,
-    calc_distance: &'a F,
-}
-
-fn resolve_sum_of_subset_rec_sub<F>(
-    item: Node,
-    mut min_distance: u32,
-    result: &mut Vec<Node>,
-    param: Param<F>,
-) -> u32
-where
-    F: Fn(u32, u32) -> u32,
-{
-    if item.union_values.len() == param.k {
-        if item.distance < min_distance {
-            min_distance = item.distance;
-            result.push(item);
-            return min_distance;
-        } else {
-            result.push(item);
-            return min_distance;
-        }
-    }
-    if item.distance >= min_distance {
-        return min_distance;
-    }
-    for j in item.current_index + 1..param.n {
-        let mut node = Node {
-            current_index: j,
-            visited_indices: item.visited_indices.clone(),
-            union_values: item.union_values.clone(),
-            distance: item.distance
-                + item
-                    .visited_indices
-                    .iter()
-                    .map(|i| (param.calc_distance)(param.weight[*i], param.weight[j]))
-                    .sum::<u32>(),
-        };
-        node.visited_indices.insert(node.current_index);
-        node.union_values
-            .extend(param.value[node.current_index].iter());
-        min_distance = resolve_sum_of_subset_rec_sub(node, min_distance, result, Param { ..param });
-    }
-    min_distance
-}
-
-pub fn resolve_sum_of_subset_rec_spawn<F>(
-    value: Vec<HashSet<u32>>,
-    weight: Vec<u32>,
-    calc_distance: F,
-) -> Vec<Node>
+pub fn resolve_sum_of_subset_rec_spawn<F>(value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: F) -> Vec<Node>
 where
     F: Fn(u32, u32) -> u32 + Send + Sync + 'static,
 {
@@ -277,11 +202,52 @@ where
 
     let min_distance_sync = min_distance.lock().unwrap();
 
-    let result: Vec<_> = result
-        .into_iter()
-        .filter(|node| node.distance <= *min_distance_sync)
-        .collect();
+    let result: Vec<_> = result.into_iter().filter(|node| node.distance <= *min_distance_sync).collect();
     remove_duplicates(result, |node| &node.visited_indices)
+}
+
+struct Param<'a, F> {
+    k: usize,
+    n: usize,
+    value: &'a Vec<HashSet<u32>>,
+    weight: &'a Vec<u32>,
+    calc_distance: &'a F,
+}
+
+fn resolve_sum_of_subset_rec_sub<F>(item: Node, mut min_distance: u32, result: &mut Vec<Node>, param: Param<F>) -> u32
+where
+    F: Fn(u32, u32) -> u32,
+{
+    if item.union_values.len() == param.k {
+        if item.distance < min_distance {
+            min_distance = item.distance;
+            result.push(item);
+            return min_distance;
+        } else {
+            result.push(item);
+            return min_distance;
+        }
+    }
+    if item.distance >= min_distance {
+        return min_distance;
+    }
+    for j in item.current_index + 1..param.n {
+        let mut node = Node {
+            current_index: j,
+            visited_indices: item.visited_indices.clone(),
+            union_values: item.union_values.clone(),
+            distance: item.distance
+                + item
+                    .visited_indices
+                    .iter()
+                    .map(|i| (param.calc_distance)(param.weight[*i], param.weight[j]))
+                    .sum::<u32>(),
+        };
+        node.visited_indices.insert(node.current_index);
+        node.union_values.extend(param.value[node.current_index].iter());
+        min_distance = resolve_sum_of_subset_rec_sub(node, min_distance, result, Param { ..param });
+    }
+    min_distance
 }
 
 fn remove_duplicates<T, F, K>(vec: Vec<T>, key: F) -> Vec<T>
@@ -303,12 +269,8 @@ where
     unique_vec
 }
 
-fn resolve_sum_of_subset_rec_spawn_sub<F>(
-    item: Node,
-    min_distance: Arc<Mutex<u32>>,
-    result: &mut Vec<Node>,
-    param: Param<F>,
-) where
+fn resolve_sum_of_subset_rec_spawn_sub<F>(item: Node, min_distance: Arc<Mutex<u32>>, result: &mut Vec<Node>, param: Param<F>)
+where
     F: Fn(u32, u32) -> u32,
 {
     {
