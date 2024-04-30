@@ -27,7 +27,7 @@ def main():
         {6, 9},
         {7},
         {6, 9, 13, 15},
-        {20, 22},
+        # {20, 22},
     ]
     W = [1 for _ in L]
 
@@ -53,6 +53,12 @@ def main():
     print("Stack In Rust (embed calc_distance)")
     t = time.time()
     print(sum_subset.resolve_sum_of_subset_rec(L, W))
+    print(time.time() - t)
+    print()
+
+    print("Stack In Rust w/ parallel (embed calc_distance)")
+    t = time.time()
+    print(sum_subset.resolve_sum_of_subset_rec_spawn(L, W))
     print(time.time() - t)
     print()
 
