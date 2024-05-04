@@ -28,7 +28,7 @@ fn test() {
     ];
     let weight: Vec<u32> = vec![1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
-    let result = sum_subset::resolver::resolve_sum_of_subset(value, weight, |x, y| x * x + y * y + 2 * x * y);
+    let result = sum_subset::sum_subset::resolve(value, weight, |x, y| x * x + y * y + 2 * x * y);
 
     for item in result.iter() {
         let mut v = Vec::from_iter(item.visited_indices.iter());

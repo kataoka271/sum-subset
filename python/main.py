@@ -33,38 +33,38 @@ def main():
 
     print("Queue In Rust")
     t = time.time()
-    print(sum_subset.resolve_sum_of_subset(L, W, lambda x, y: x * x + y * y + 2 * x * y))
+    print(sum_subset.resolve(L, W, lambda x, y: x * x + y * y + 2 * x * y))
     print(time.time() - t)
     print()
 
     print("Stack In Rust")
     t = time.time()
-    print(sum_subset.resolve_sum_of_subset_rec(L, W, lambda x, y: x * x + y * y + 2 * x * y))
+    print(sum_subset.resolve_rec(L, W, lambda x, y: x * x + y * y + 2 * x * y))
     print(time.time() - t)
     print()
 
     # 距離関数をRust埋め込みにすると更に早い
     print("Queue In Rust (embed calc_distance)")
     t = time.time()
-    print(sum_subset.resolve_sum_of_subset(L, W))
+    print(sum_subset.resolve(L, W))
     print(time.time() - t)
     print()
 
     print("Stack In Rust (embed calc_distance)")
     t = time.time()
-    print(sum_subset.resolve_sum_of_subset_rec(L, W))
+    print(sum_subset.resolve_rec(L, W))
     print(time.time() - t)
     print()
 
     print("Stack In Rust w/ parallel (embed calc_distance)")
     t = time.time()
-    print(sum_subset.resolve_sum_of_subset_rec_spawn(L, W))
+    print(sum_subset.resolve_rec_spawn(L, W))
     print(time.time() - t)
     print()
 
     print("Stack In Rust w/ rayon (embed calc_distance)")
     t = time.time()
-    print(sum_subset.resolve_sum_of_subset_rec_rayon(L, W))
+    print(sum_subset.resolve_rec_rayon(L, W))
     print(time.time() - t)
     print()
 

@@ -1,4 +1,4 @@
-pub mod resolver;
+pub mod sum_subset;
 
 use pyo3::prelude::*;
 use std::collections::HashSet;
@@ -17,30 +17,31 @@ macro_rules! run_resolver {
 }
 
 #[pyfunction]
-fn resolve_sum_of_subset(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
-    run_resolver!(resolver::resolve_sum_of_subset, value, weight, calc_distance)
+fn resolve(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
+    run_resolver!(sum_subset::resolve, value, weight, calc_distance)
 }
 
 #[pyfunction]
-fn resolve_sum_of_subset_rec(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
-    run_resolver!(resolver::resolve_sum_of_subset_rec, value, weight, calc_distance)
+fn resolve_rec(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
+    run_resolver!(sum_subset::resolve_rec, value, weight, calc_distance)
 }
 
 #[pyfunction]
-fn resolve_sum_of_subset_rec_spawn(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
-    run_resolver!(resolver::resolve_sum_of_subset_rec_spawn, value, weight, calc_distance)
+fn resolve_rec_spawn(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
+    run_resolver!(sum_subset::resolve_rec_spawn, value, weight, calc_distance)
 }
 
 #[pyfunction]
-fn resolve_sum_of_subset_rec_rayon(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
-    run_resolver!(resolver::resolve_sum_of_subset_rec_rayon, value, weight, calc_distance)
+fn resolve_rec_rayon(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
+    run_resolver!(sum_subset::resolve_rec_rayon, value, weight, calc_distance)
 }
 
 #[pymodule]
-fn sum_subset(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset, m)?)?;
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec, m)?)?;
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec_spawn, m)?)?;
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec_rayon, m)?)?;
+#[pyo3(name = "sum_subset")]
+fn lib_sum_subset(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(resolve, m)?)?;
+    m.add_function(wrap_pyfunction!(resolve_rec, m)?)?;
+    m.add_function(wrap_pyfunction!(resolve_rec_spawn, m)?)?;
+    m.add_function(wrap_pyfunction!(resolve_rec_rayon, m)?)?;
     Ok(())
 }
