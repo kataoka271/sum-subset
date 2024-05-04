@@ -2,14 +2,6 @@ mod resolver;
 use pyo3::prelude::*;
 use std::collections::HashSet;
 
-#[pymodule]
-fn sum_subset(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset, m)?)?;
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec, m)?)?;
-    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec_spawn, m)?)?;
-    Ok(())
-}
-
 macro_rules! run_resolver {
     ( $func:path, $value:expr, $weight:expr, $calc_distance:path ) => {{
         let r = match ($calc_distance) {
@@ -36,4 +28,12 @@ fn resolve_sum_of_subset_rec(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<
 #[pyfunction]
 fn resolve_sum_of_subset_rec_spawn(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
     run_resolver!(resolver::resolve_sum_of_subset_rec_spawn, value, weight, calc_distance)
+}
+
+#[pymodule]
+fn sum_subset(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(resolve_sum_of_subset, m)?)?;
+    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec, m)?)?;
+    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec_spawn, m)?)?;
+    Ok(())
 }

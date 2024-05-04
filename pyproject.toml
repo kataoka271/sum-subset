@@ -1,3 +1,7 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
 [tool.poetry]
 name = "sum-subset"
 version = "0.1.0"
@@ -9,11 +13,6 @@ python = "^3.11"
 numpy = "^1.26.4"
 maturin = "^1.5.1"
 
-
-[build-system]
-requires = ["maturin>=1.5,<2.0"]
-build-backend = "maturin"
-
 [tool.maturin]
 features = ["pyo3/extension-module"]
-python-source = "py"
+module-name = "py.sum_subset"
