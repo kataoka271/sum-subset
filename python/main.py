@@ -62,6 +62,12 @@ def main():
     print(time.time() - t)
     print()
 
+    print("Stack In Rust w/ rayon (embed calc_distance)")
+    t = time.time()
+    print(sum_subset.resolve_sum_of_subset_rec_rayon(L, W))
+    print(time.time() - t)
+    print()
+
     # t = time.time()
     # print(resolve_sum_of_subset(L, W, lambda x, y: x * x + y * y + 2 * x * y))
     # print(time.time() - t)

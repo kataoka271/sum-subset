@@ -1,4 +1,5 @@
-mod resolver;
+pub mod resolver;
+
 use pyo3::prelude::*;
 use std::collections::HashSet;
 
@@ -30,10 +31,16 @@ fn resolve_sum_of_subset_rec_spawn(_py: Python, value: Vec<HashSet<u32>>, weight
     run_resolver!(resolver::resolve_sum_of_subset_rec_spawn, value, weight, calc_distance)
 }
 
+#[pyfunction]
+fn resolve_sum_of_subset_rec_rayon(_py: Python, value: Vec<HashSet<u32>>, weight: Vec<u32>, calc_distance: Option<PyObject>) -> PyResult<Vec<HashSet<usize>>> {
+    run_resolver!(resolver::resolve_sum_of_subset_rec_rayon, value, weight, calc_distance)
+}
+
 #[pymodule]
 fn sum_subset(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(resolve_sum_of_subset, m)?)?;
     m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec, m)?)?;
     m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec_spawn, m)?)?;
+    m.add_function(wrap_pyfunction!(resolve_sum_of_subset_rec_rayon, m)?)?;
     Ok(())
 }
